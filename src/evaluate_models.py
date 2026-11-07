@@ -1,10 +1,4 @@
-"""
-Sklearn multi-model evaluation + Word report generator (simplified)
-- Dataset: Breast Cancer (sklearn)
-- Models: Logistic Regression, SVM (RBF), Random Forest, k-NN, Decision Tree, Gaussian NB
-- Metrics: Accuracy, F1 (weighted), Confusion Matrix (+ 5-fold CV accuracy)
-- Report: Concepts-focused (no full code, no line-by-line; explains ML parts only)
-"""
+"""Compare six classifiers on scikit-learn's breast-cancer dataset."""
 
 import numpy as np
 from sklearn.datasets import load_breast_cancer
@@ -17,6 +11,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB
+from sklearn.pipeline import make_pipeline
 
 
 def evaluate_models():
@@ -58,9 +53,10 @@ def evaluate_models():
         f1w = f1_score(y_test, y_pred, average="weighted")
         cm = confusion_matrix(y_test, y_pred)
 
-        # Simple 5-fold CV accuracy on full data
+        # Fit preprocessing inside each fold to avoid validation leakage.
+        cv_model = make_pipeline(StandardScaler(), model) if use_scaled else model
         cv_scores = cross_val_score(
-            model, (X if not use_scaled else scaler.fit_transform(X)), y, cv=5, scoring="accuracy"
+            cv_model, X, y, cv=5, scoring="accuracy"
         )
 
         results[name] = {
@@ -94,8 +90,9 @@ def main():
         print(f"Accuracy: {info['accuracy']:.4f}")
         print(f"F1 (weighted): {info['f1_weighted']:.4f}")
         print(
-            f"CV ACC mean±std: {info['cv_mean_acc']:.4f} ± {info['cv_std_acc']:.4f}"
+            f"CV ACC mean +/- std: {info['cv_mean_acc']:.4f} +/- {info['cv_std_acc']:.4f}"
         )
-        
+
+
 if __name__ == "__main__":
     main()

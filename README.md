@@ -2,12 +2,12 @@
 
 This is a compact machine-learning exercise using scikit-learn's Wisconsin breast-cancer dataset. It compares several familiar classifiers under the same train/test split and reports accuracy, weighted F1, a confusion matrix, and five-fold cross-validation accuracy.
 
-The models are logistic regression, an RBF support-vector machine, k-nearest neighbors, random forest, decision tree, and Gaussian naive Bayes. Scaling is applied to the models that depend strongly on feature magnitude.
+The models are logistic regression, an RBF support-vector machine, k-nearest neighbors, random forest, decision tree, and Gaussian naive Bayes. Scaling is applied to the models that depend strongly on feature magnitude. During cross-validation, preprocessing is fitted separately inside each fold to avoid validation leakage.
 
 ## Running
 
 ```bash
-pip install numpy scikit-learn
+python -m pip install -r requirements.txt
 python src/evaluate_models.py
 ```
 
